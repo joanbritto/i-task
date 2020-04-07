@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use backend\models\Account;
 use backend\models\Person;
+use backend\models\Admins;
 
 /**
  * Login form
@@ -39,19 +40,19 @@ class LoginForm extends Model {
      * @param string $attribute the attribute currently being validated
      * @param array $params the additional name-value pairs given in the rule
      */
-    public function validatePassword($attribute, $params) {
+    public function validatePassword($attribute, $params = false) {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
-            
-            
+            //$user = $this->getUserData($this->username);
             if ($user) {
-                $adminPass = \backend\models\Admins::find()->where(['email' => $user->username, 'approveStatus' => 1, 'status' => 1])->one();
-            $pass = ($adminPass && isset($adminPass->password)) ? $adminPass->password : '';
-                if ($pass && $pass != $this->password) {
-                    $this->addError($attribute, 'Incorrect username or password.');
-                }
-                if (!$pass && !$user->validatePassword($this->password)) {
-                    $this->addError($attribute, 'Incorrect username or password.');
+                if (!isset($user->approveStatus)) {
+                    if (!$this->validatePassword($this->password)) {
+                        $this->addError($attribute, 'Incorrect username or password.');
+                    }
+                } else {
+                    if ($user->password != $this->password) {
+                        $this->addError($attribute, 'Incorrect username or password.');
+                    }
                 }
             } else {
                 $this->addError($attribute, 'Incorrect username or password.');
@@ -66,8 +67,9 @@ class LoginForm extends Model {
      */
     public function login() {
         if ($this->validate()) {
-            $res = Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
-            return $res;
+            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+            //echo '<pre>';print_r($this->getUser());exit;
+            return Yii::$app->user->login($this->getUserData($this->username), $this->rememberMe ? 3600 * 24 * 30 : 0);
         }
 
         return false;
@@ -78,12 +80,16 @@ class LoginForm extends Model {
         if ($person) {
             $user = Account::find()->where(['status' => 1, 'id' => $person->account_id])->one();
             if ($user) {
-                $user = $user;
+                $this->_user = $user; 
             }
-            if ($user)
-                return $user;
-        } else
-            return $this->_user;
+            
+        } else {
+            $user = Admins::find()->where(['email' => $email])->andWhere(['status' => 1, 'approveStatus' => 1])->one();
+            if ($user) {
+                $this->_user = $user;
+            }
+        }
+        return $this->_user;
     }
 
     /**

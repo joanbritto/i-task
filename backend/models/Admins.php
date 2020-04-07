@@ -6,7 +6,7 @@ use Yii;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\behaviors\TimestampBehavior;
-
+use yii\helpers\Url;
 /**
  * This is the model class for table "Projects".
  *
@@ -67,6 +67,21 @@ class Admins extends \yii\mongodb\ActiveRecord{
                 'value' => time(),
             ],
         ];
+    }
+    
+    public function getProfileImage(){
+        $model = Person::find()->where(['account_id'=>yii::$app->user->identity->id])->one();
+        $imageUrl = '';
+        if($model){
+            $imageUrl = $model->image_url;
+        }
+        if($imageUrl){
+            $locationPath = Yii::$app->params['base_path_profile_images'];
+            $path = $locationPath.$imageUrl;
+            return Url::to($path);
+        }else{
+            return Url::to('@web/img/default.jpg');
+        }
     }
 
 }

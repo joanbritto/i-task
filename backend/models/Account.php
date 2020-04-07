@@ -41,7 +41,7 @@ class Account extends \yii\db\ActiveRecord
             [['status'], 'integer'],
             [['created_at', 'modified_at'], 'safe'],
             [['username', 'password_hash', 'role', 'password_reset_token', 'auth_key','password_generated_yii','emp_code','emp_name','email'], 'string', 'max' => 255],
-            [['username','password_hash'],'required'],
+            [['username'],'required'],
             [['password_hash','username'],'string','min'=>6],
             [['phone'],'number'],
             [['phone'],'is_unique'],
