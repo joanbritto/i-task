@@ -14,9 +14,9 @@ use backend\models\MemberTaskReports;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'View Project : ' . $model->projectName);
-$this->params['breadcrumbs'][] = ['label'=>'Projects','url'=>'index'];
+$this->params['breadcrumbs'][] = ['label' => 'Projects', 'url' => 'index'];
 $this->params['breadcrumbs'][] = $this->title;
-$taskStatusArr = ['Task Completed','Task Pending'];
+$taskStatusArr = ['Task Completed', 'Task Pending'];
 ?>
 <div class="container">
 
@@ -43,7 +43,7 @@ $taskStatusArr = ['Task Completed','Task Pending'];
             <tbody>
                 <?php
                 $datatArr = [];
-                $completedCount=$pendongCount=0;
+                $completedCount = $pendongCount = 0;
                 if ($tasks) {
 
                     foreach ($tasks as $row) {
@@ -63,10 +63,10 @@ $taskStatusArr = ['Task Completed','Task Pending'];
                             $statusName = ($taskReports && isset($taskReports->notes)) ? ucwords($taskReports->notes) : '';
                             //$datatArr[(string)$taskObjectId] = $statusName;
                             $datatArr[] = $statusName;
-                            if($statusName=='Task Completed'){
+                            if ($statusName == 'Task Completed') {
                                 $completedCount++;
                             }
-                            if($statusName=='Task Pending'){
+                            if ($statusName == 'Task Pending') {
                                 $pendongCount++;
                             }
                         }
@@ -78,7 +78,7 @@ $taskStatusArr = ['Task Completed','Task Pending'];
                             <td><?= $memberName ? ucwords($memberName) : ''; ?></td>
                             <td><?= $statusName ?></td>
                         </tr>
-                    <?php
+                        <?php
                     }
                 }
                 ?>
@@ -87,51 +87,81 @@ $taskStatusArr = ['Task Completed','Task Pending'];
     </div>
 </div>
 <?php
-$vals = "'" . implode ( "', '", $taskStatusArr ) . "'";
+$vals = "'" . implode("', '", $taskStatusArr) . "'";
 
 //echo '<pre>';print_r($vals);exit;
 $this->registerJs("
     //pie
     var ctxP = document.getElementById('pieChart').getContext('2d');
     var myPieChart = new Chart(ctxP, {
+    plugins: [ChartDataLabels],
       type: 'pie',
       data: {
         //labels: ['Red', 'Green', 'Yellow', 'Grey', 'Dark Grey'],
-        labels:[".$vals."],
+        labels:[" . $vals . "],
         datasets: [{
-          data: [$completedCount, $pendongCount],
           data: [$completedCount, $pendongCount],
           backgroundColor: ['#46BFBD', '#F7464A',],
           hoverBackgroundColor: ['#5AD3D1','#FF5A5E']
         }]
       },
       options: {
-        responsive: true
+        responsive: true,
+        legend: {
+      position: 'right',
+      labels: {
+        padding: 20,
+        boxWidth: 10
+      }
+    },
+    plugins: {
+      datalabels: {
+        formatter: (value, ctx) => {
+        console.log(value);
+          let sum = 0;
+          let dataArr = ctx.chart.data.datasets[0].data;
+          dataArr.map(data => {
+            sum += data;
+          });
+          let percentage = (value * 100 / sum).toFixed(2) +  '%' ;
+          return percentage;
+        },
+        color: 'white',
+        labels: {
+          title: {
+            font: {
+              size: '16'
+            }
+          }
+        }
+      }
+      }
+    
       }
     });
 ");
 ?>
 
 <?php
-/*$vals = implode(",", $taskStatusArr);
-//echo '<pre>';print_r($vals);exit;
-$this->registerJs("
-    //pie
-    var ctxP = document.getElementById('pieChart').getContext('2d');
-    var myPieChart = new Chart(ctxP, {
-      type: 'pie',
-      data: {
-        //labels: ['Red', 'Green', 'Yellow', 'Grey', 'Dark Grey'],
-        labels:".$vals.",
-        datasets: [{
-          data: [300, 50, 100, 40, 120],
-          backgroundColor: ['#F7464A', '#46BFBD', '#FDB45C', '#949FB1', '#4D5360'],
-          hoverBackgroundColor: ['#FF5A5E', '#5AD3D1', '#FFC870', '#A8B3C5', '#616774']
-        }]
-      },
-      options: {
-        responsive: true
-      }
-    });
-");*/
+/* $vals = implode(",", $taskStatusArr);
+  //echo '<pre>';print_r($vals);exit;
+  $this->registerJs("
+  //pie
+  var ctxP = document.getElementById('pieChart').getContext('2d');
+  var myPieChart = new Chart(ctxP, {
+  type: 'pie',
+  data: {
+  //labels: ['Red', 'Green', 'Yellow', 'Grey', 'Dark Grey'],
+  labels:".$vals.",
+  datasets: [{
+  data: [300, 50, 100, 40, 120],
+  backgroundColor: ['#F7464A', '#46BFBD', '#FDB45C', '#949FB1', '#4D5360'],
+  hoverBackgroundColor: ['#FF5A5E', '#5AD3D1', '#FFC870', '#A8B3C5', '#616774']
+  }]
+  },
+  options: {
+  responsive: true
+  }
+  });
+  "); */
 ?>
