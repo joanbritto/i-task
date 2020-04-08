@@ -83,9 +83,7 @@ class AdminsController extends Controller {
             $modelAccount->role = 'admin';
             $modelAccount->status = 1;
             $modelAccount->phone = $model->phone;
-            if(!$modelAccount->save()){
-                echo '<pre>';print_r($modelAccount->getErrors());exit;
-            }
+            $modelAccount->save(false);
         }
         $model->save();
         $_SESSION['msg'] = true;

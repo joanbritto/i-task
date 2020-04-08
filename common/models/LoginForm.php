@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use backend\models\Account;
 use backend\models\Person;
+use backend\models\Admins;
 
 /**
  * Login form
@@ -42,12 +43,15 @@ class LoginForm extends Model {
     public function validatePassword($attribute, $params) {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
-            
-            
+
+
             if ($user) {
-                $adminPass = \backend\models\Admins::find()->where(['email' => $user->username, 'approveStatus' => 1, 'status' => 1])->one();
-            $pass = ($adminPass && isset($adminPass->password)) ? $adminPass->password : '';
-                if ($pass && $pass != $this->password) {
+                $adminPass = Admins::find()->where(['email' => $user->username, 'status' => 1])->one();
+                //$adminPass = \backend\models\Admins::find()->where(['email' => $user->username, 'approveStatus' => 1, 'status' => 1])->one();
+                $pass = ($adminPass && isset($adminPass->password)) ? $adminPass->password : '';
+                $approveStatus = ($adminPass && isset($adminPass->approveStatus)) ? $adminPass->approveStatus : '';
+                //echo $pass;exit;
+                if ($pass && (!$approveStatus || $pass != $this->password)) {
                     $this->addError($attribute, 'Incorrect username or password.');
                 }
                 if (!$pass && !$user->validatePassword($this->password)) {
@@ -67,6 +71,8 @@ class LoginForm extends Model {
     public function login() {
         if ($this->validate()) {
             $res = Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+            //$res = Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+            //$res = Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
             return $res;
         }
 

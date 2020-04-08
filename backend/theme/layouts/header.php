@@ -13,11 +13,11 @@ $model = Account::find()->leftJoin('person', 'person.account_id=account.id')
 /* @var $this \yii\web\View */
 /* @var $content string */
 if (!$model) {
-
     $model = Admins::find()->where(['email' => $username, 'status' => 1, 'approveStatus' => 1])->one();
 }
 $phone = (isset($model->phone)) ? $model->phone : '-';
 $name = (isset($model->name)) ? $model->name : (isset($model->fullName) ? $model->fullName : '-');
+$profileImage = ($model && $model->getProfileImage()) ? $model->getProfileImage() : '';
 ?>
 
 <header class="main-header">
@@ -40,13 +40,13 @@ $name = (isset($model->name)) ? $model->name : (isset($model->fullName) ? $model
 
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="<?= $model->getProfileImage() ?>" class="user-image" alt="User Image"/>
+                        <img src="<?= $profileImage ?>" class="user-image" alt="User Image"/>
                         <span class="hidden-xs"><?= Ucfirst($name) ?></span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
                         <li class="user-header">
-                            <img src="<?= $model->getProfileImage() ?>" class="img-circle"
+                            <img src="<?= $profileImage ?>" class="img-circle"
                                  alt="User Image"/>
 
                             <p>
