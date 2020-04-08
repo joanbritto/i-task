@@ -119,3 +119,13 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+table th,td{
+    /* font-size: .9rem; */
+    xfont-weight: 300;
+    font-size: 14px !important;
+}
+table a{
+    font-size: 12px !important;
+    text-transform: none !important;
+    font-weight: 600 !important;  
+}

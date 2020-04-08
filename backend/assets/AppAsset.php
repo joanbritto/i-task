@@ -15,9 +15,9 @@ class AppAsset extends AssetBundle
         //'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap',
         //'css/bootstrap.min.css',
         'css/site.css',
-        'css/sweetalert.css',       
+        'css/sweetalert.css',  
         'css/mdb.min.css',
-        'css/style.css'
+       
     ];
     public $js = [        
         //'js/jquery.min.js',

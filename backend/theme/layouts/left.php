@@ -16,10 +16,11 @@ $role = yii::$app->user->identity->role;
             [
                 'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
                 'items' => [
-                    ['label' => 'Dashboard', 'icon' => 'file-code-o', 'url' => ['/site']],
+                    ['label' => 'Dashboard', 'icon' => 'dashboard', 'url' => ['/site']],
                     ['label' => 'Projects', 'icon' => 'file-code-o', 'url' => ['/projects'],'visible' => ($role=='admin') ? true : false],
-                    ['label' => 'Administrators', 'icon' => 'file-code-o', 'url' => ['/admins'],'visible' => ($role=='super-admin') ? true : false],
+                    ['label' => 'Administrators', 'icon' => 'user-circle-o', 'url' => ['/admins'],'visible' => ($role=='super-admin') ? true : false],
                     ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],                   
+                    ['label' => 'Logout','icon'=>'sign-out','data-method' => 'post', 'url' => ['site/logout'], 'visible' => !Yii::$app->user->isGuest],                   
                 ],
             ]
         ) ?>

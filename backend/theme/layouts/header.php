@@ -7,6 +7,8 @@ use backend\models\Admins;
 
 $id = Yii::$app->user->identity->id;
 $username = Yii::$app->user->identity->username;
+$role = yii::$app->user->identity->role;
+
 $model = Account::find()->leftJoin('person', 'person.account_id=account.id')
                 ->where(['account.status' => 1])->andWhere(['person.status' => 1])->andWhere(['account.id' => $id])
                 ->select('person.*,account.username as username,person.phone as phone,account.emp_code as emp_code,account.role as role')->one();
@@ -40,19 +42,18 @@ $profileImage = ($model && $model->getProfileImage()) ? $model->getProfileImage(
 
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="<?= $profileImage ?>" class="user-image" alt="User Image"/>
+                        <img src="<?= $profileImage ?>" class="user-image" alt="Profile Image"/>
                         <span class="hidden-xs"><?= Ucfirst($name) ?></span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
                         <li class="user-header">
-                            <img src="<?= $profileImage ?>" class="img-circle"
-                                 alt="User Image"/>
+                            <img src="<?= $profileImage ?>" class="img-circle"  alt="Profile Image"/>
 
                             <p>
-                                <?= Ucfirst($name) ?>
-                                <small>username : <?= $username ?></small>
-                                <small>phone : <?= $phone ?></small>
+                                <?= ucfirst($name) ?>
+                                <small>Username : <?= $username ?></small>
+                                <small>Phone : <?= $phone ?></small>
 
                             </p>
                         </li>
@@ -60,12 +61,14 @@ $profileImage = ($model && $model->getProfileImage()) ? $model->getProfileImage(
                         <!-- Menu Footer-->
                         <li class="user-footer">
                             <div class="pull-left">
-                                <a href="<?= Url::to(['site/profile']) ?>" class="btn btn-default btn-flat">Profile update</a>
+                                <?php if ($role == 'super-admin') { ?>
+                                    <a href="<?= Url::to(['site/profile']) ?>" class="btn btn-default btn-flat">Profile Update</a>
+                                <?php } ?>
                             </div>
                             <div class="pull-right">
                                 <?=
                                 Html::a(
-                                        'Sign out',
+                                        'Logout',
                                         ['/site/logout'],
                                         ['data-method' => 'post', 'class' => 'btn btn-default btn-flat']
                                 )
