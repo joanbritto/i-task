@@ -1,5 +1,5 @@
 <?php
-define('UPLOADS_PATH','http://localhost/i-task/common/uploads');
+define('UPLOADS_PATH','http://172.104.61.150/i-task/common/uploads');
 return [
     'adminEmail' => 'admin@example.com',
     'supportEmail' => 'support@example.com',
