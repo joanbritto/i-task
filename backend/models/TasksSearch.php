@@ -5,12 +5,12 @@ namespace backend\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use backend\models\Projects;
+use backend\models\Tasks;
 
 /**
- * ProjectsSearch represents the model behind the search form of `backend\models\Projects`.
+ * TasksSearch represents the model behind the search form of `backend\models\Tasks`.
  */
-class ProjectsSearch extends Projects
+class TasksSearch extends Tasks
 {
     /**
      * {@inheritdoc}
@@ -18,7 +18,7 @@ class ProjectsSearch extends Projects
     public function rules()
     {
         return [
-            [[ '_id', 'projectName', 'dueDate', 'description', 'projectCreatedBy', 'members', 'status', 'tsCreatedAt', 'tsModifiedAt'], 'safe'],
+            [[ '_id', 'projectId', 'taskName', 'dueDate', 'description', 'taskCreatedBy', 'status', 'tsCreatedAt', 'tsModifiedAt'], 'safe'],
         ];
     }
 
@@ -38,13 +38,10 @@ class ProjectsSearch extends Projects
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params,$id)
     {
-        $userId = Yii::$app->user->identity->objectId;
-        //echo $userId;exit;
-        //$query = Projects::find()->where(['status' => 1,'projectCreatedBy'=>(string)$userId]);
-        $objectId = yii::$app->utilities->getObjectId($userId);
-        $query = Projects::find()->where(['status' => 1,'projectCreatedBy'=>$objectId]);
+        $projectObjectId = yii::$app->utilities->getObjectId($id);
+        $query = Tasks::find()->where(['status' => 1,'projectId'=>$projectObjectId]);
 
         // add conditions that should always apply here
 

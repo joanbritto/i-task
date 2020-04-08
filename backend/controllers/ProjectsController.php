@@ -10,6 +10,8 @@ use backend\models\Projects;
 use backend\models\ProjectsSearch;
 use yii\web\UploadedFile;
 use yii\web\NotFoundHttpException;
+use backend\models\Tasks;
+use backend\models\TasksSearch;
 
 /**
  * Site controller
@@ -77,8 +79,12 @@ class ProjectsController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-
-        return $this->render('view', ['model'=>$model]);
+        
+        //$searchModel = new TasksSearch();
+        //$dataProvider = $searchModel->search(Yii::$app->request->queryParams,$id);
+        $projectObjectId = yii::$app->utilities->getObjectId($id);
+        $tasks = Tasks::find()->where(['status' => 1,'projectId'=>$projectObjectId])->all();        
+        return $this->render('view', ['model'=>$model,'tasks'=>$tasks]);
     }    
     
     protected function findModel($id)

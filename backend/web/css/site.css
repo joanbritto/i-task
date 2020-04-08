@@ -119,9 +119,11 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
-table th,td{
-    /* font-size: .9rem; */
-    xfont-weight: 300;
+table td{
+    font-size: 14px !important;
+}
+table th{
+    font-weight: 600 !important;
     font-size: 14px !important;
 }
 table a{
