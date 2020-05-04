@@ -65,9 +65,6 @@ class MemberTasks extends \yii\mongodb\ActiveRecord {
         return $this->hasOne(Projects::className(), ['_id' => 'projectId']);
     }
     
-      public function getMemberById($id) {
-        $objectId = yii::$app->utilities->getObjectId($id);
-        return Members::find()->where(['_id'=>(string)$objectId,'status'=>1])->one();
-    }
+     
 
 }

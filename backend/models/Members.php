@@ -85,5 +85,10 @@ class Members extends \yii\mongodb\ActiveRecord{
             return Url::to('@web/img/default.jpg');
         }
     }
+    
+     public function getMemberById($id) {
+        $objectId = yii::$app->utilities->getObjectId($id);
+        return self::find()->where(['_id'=>(string)$objectId,'status'=>1])->one();
+    }
 
 }

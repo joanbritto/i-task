@@ -23,7 +23,7 @@ class Projects extends \yii\mongodb\ActiveRecord {
      */
     public function attributes() {
         return [
-            '_id', 'projectName', 'dueDate', 'description', 'projectCreatedBy', 'members', 'status', 'tsCreatedAt', 'tsModifiedAt'
+            '_id', 'projectName','projectCode', 'dueDate', 'description', 'projectCreatedBy', 'members', 'status', 'tsCreatedAt', 'tsModifiedAt'
         ];
     }
 
@@ -32,7 +32,7 @@ class Projects extends \yii\mongodb\ActiveRecord {
      */
     public function rules() {
         return [
-            [['_id', 'projectName', 'dueDate', 'description', 'projectCreatedBy', 'members', 'status', 'tsCreatedAt', 'tsModifiedAt'], 'safe'],
+            [['_id', 'projectName','projectCode', 'dueDate', 'description', 'projectCreatedBy', 'members', 'status', 'tsCreatedAt', 'tsModifiedAt'], 'safe'],
             [['projectName', 'dueDate', 'description', 'projectCreatedBy'], 'string'],
         ];
     }
@@ -44,6 +44,7 @@ class Projects extends \yii\mongodb\ActiveRecord {
         return [
             '_id' => 'ID',
             'projectName' => 'Project',
+            'projectCode' => 'Code',
             'dueDate' => 'Due Date',
             'description' => 'Description',
             'projectCreatedBy' => 'Created By',

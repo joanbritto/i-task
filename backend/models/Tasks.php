@@ -24,7 +24,7 @@ class Tasks extends \yii\mongodb\ActiveRecord {
      */
     public function attributes() {
         return [
-            '_id', 'projectId', 'taskName', 'dueDate', 'description', 'taskCreatedBy', 'status', 'tsCreatedAt', 'tsModifiedAt'
+            '_id', 'projectId','isCompleted', 'taskName', 'dueDate', 'description', 'taskCreatedBy', 'status', 'tsCreatedAt', 'tsModifiedAt','completedDate'
         ];
     }
 
@@ -33,7 +33,7 @@ class Tasks extends \yii\mongodb\ActiveRecord {
      */
     public function rules() {
         return [
-            [['_id', 'projectId', 'taskName', 'dueDate', 'description', 'taskCreatedBy', 'status', 'tsCreatedAt', 'tsModifiedAt'], 'safe'],
+            [['_id', 'projectId','isCompleted', 'taskName', 'dueDate', 'description', 'taskCreatedBy', 'status', 'tsCreatedAt', 'tsModifiedAt'], 'safe'],
         ];
     }
 
@@ -44,6 +44,7 @@ class Tasks extends \yii\mongodb\ActiveRecord {
         return [
             '_id' => 'ID',
             'projectId' => 'Project',
+            'isCompleted' => 'is Completed?',
             'taskName' => 'Task',
             'dueDate' => 'Due Date',
             'description' => 'Description',
@@ -52,7 +53,8 @@ class Tasks extends \yii\mongodb\ActiveRecord {
             'tsCreatedAt' => 'Created At',
             'tsModifiedAt' => 'Modified At',
             'memberId' => 'Member',
-            'taskStatus'=>'Task Status'
+            'taskStatus'=>'Task Status',
+            'completedDate' => 'Completed On'
         ];
     }
     

@@ -6,8 +6,7 @@ use yii\widgets\Pjax;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use backend\models\Tasks;
-use backend\models\MemberTasks;
-use backend\models\MemberTaskReports;
+use backend\models\Members;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\UsersSearch */
@@ -16,7 +15,8 @@ use backend\models\MemberTaskReports;
 $this->title = Yii::t('app', 'View Project : ' . $model->projectName);
 $this->params['breadcrumbs'][] = ['label' => 'Projects', 'url' => 'index'];
 $this->params['breadcrumbs'][] = $this->title;
-$taskStatusArr = ['Task Completed', 'Task Pending'];
+//$taskStatusArr = ['Task Completed', 'Task Pending'];
+$taskStatusArr = ['Task Completed', 'Ongoing', 'Overdue'];
 ?>
 <div class="container">
 
@@ -30,53 +30,98 @@ $taskStatusArr = ['Task Completed', 'Task Pending'];
     <div class="users-index">
 
         <h1>Tasks</h1>       
-        <table class="table">
-            <thead class="thead-dark">
+        <table class="table table-dark" style="color: #fff;background-color: #343a40;">
+            <thead>
                 <tr>
                     <th scope="col">Task</th>
-                    <th scope="col">Due Date</th>
+
                     <th scope="col">Description</th>
                     <th scope="col">Member</th>
                     <th scope="col">Task Status</th>
+                    <th scope="col">Due Date</th>
+                    <th scope="col">Completed On</th>
+                    <th scope="col">No of Days</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
                 $datatArr = [];
-                $completedCount = $pendongCount = 0;
+                $completedCount = $pendongCount = $overdueCount = $noOfDays = 0;
                 if ($tasks) {
 
                     foreach ($tasks as $row) {
                         $taskObjectId = yii::$app->utilities->getObjectId($row->_id);
                         $projectObjectId = yii::$app->utilities->getObjectId($model->_id);
+                        $memberId = $row->memberId;
+                        $memberObjectId = yii::$app->utilities->getObjectId($memberId);
 
-                        $memberData = MemberTasks::find()->where(['taskId' => $taskObjectId, 'projectId' => $projectObjectId, 'status' => 1])->one();
+                        //$memberData = MemberTasks::find()->where(['taskId' => $taskObjectId, 'projectId' => $projectObjectId, 'status' => 1])->one();
                         //$memberData = MemberTasks::find()->where(['status' => 1])->all();
-                        $memberId = ($memberData && isset($memberData->memberId)) ? $memberData->memberId : '';
-                        $memberName = $statusName = '';
-                        if ($memberId) {
-                            $members = MemberTasks::getMemberById($memberId);
-                            $memberName = ($members) ? $members->fullName : '';
-                            $memberObjectId = yii::$app->utilities->getObjectId($memberId);
-                            $taskReports = MemberTaskReports::find()->where(['taskId' => $taskObjectId, 'memberId' => $memberObjectId, 'status' => 1])->one();
+                        //$memberId = ($memberData && isset($memberData->memberId)) ? $memberData->memberId : '';
+                        $dueDate = $row->dueDate;
+                        $taskCreated = yii::$app->utilities->convertDate($row->tsCreatedAt);
 
-                            $statusName = ($taskReports && isset($taskReports->notes)) ? ucwords($taskReports->notes) : '';
-                            //$datatArr[(string)$taskObjectId] = $statusName;
-                            $datatArr[] = $statusName;
-                            if ($statusName == 'Task Completed') {
+                        $memberName = $statusName = $completedOn = '';
+                        if ($memberId) {
+                            $members = Members::getMemberById($memberId);
+                            $memberName = ($members) ? $members->fullName : '';
+                            $statusName = '';
+                            $currentDate = date('d-m-Y');
+                            if ($row->isCompleted == true) {
+                                $bgColor = '#00C67A';
+                                $statusName = 'Task Completed';
+                                //$completedOn = ($row->completedDate) ? yii::$app->utilities->dateFormat($row->completedDate) : '';
+                                $completedOn = ($row->completedDate) ? $row->completedDate : '';
+                                $noOfDays = yii::$app->utilities->dateDiffInDays($completedOn, $dueDate);
+                                $noOfOverDue = yii::$app->utilities->dateDiffInDays($completedOn, $currentDate);
+                                
+                                 if (strtotime($completedOn) >= strtotime('today')) {
+                                      $days = "Completed in $noOfDays days";
+                                    $bgColor = '#A01497';
+                                 }else{
+                                      if($noOfOverDue==1){
+                                        $days = "Completed $noOfDays day ago";
+                                    }else{
+                                        $days = "Completed $noOfDays days ago";
+                                    }
+                                    $bgColor = '#009AE0';   
+                                 }
+                               /* if ($noOfOverDue > 0) {
+                                                                    
+                                } else {
+                                   
+                                }*/
+
                                 $completedCount++;
-                            }
-                            if ($statusName == 'Task Pending') {
-                                $pendongCount++;
+                            } else {
+                                $noOfDays = yii::$app->utilities->dateDiffInDays($currentDate, $dueDate);
+
+                                if (strtotime($dueDate) >= strtotime('today')) { //if ($statusName == 'Task Pending') {
+                                    $bgColor = '#F7464A';
+                                    $statusName = 'Ongoing';
+                                    $pendongCount++;
+                                } else if (strtotime($dueDate) < strtotime('today')) { //if ($statusName == 'Overdue') {
+                                    $bgColor = '#D0021B';
+                                    $statusName = 'Overdue';
+                                    $overdueCount++;
+                                }
+                                if ($noOfDays == 1) {
+                                    $days = "$noOfDays day $statusName";
+                                } else {
+                                    $days = "$noOfDays days $statusName";
+                                }
                             }
                         }
                         ?>
-                        <tr>
+                        <tr  style="background-color:<?= $bgColor ?>">
                             <th scope="row"><?= $row->taskName ?></th>
-                            <td><?= $row->dueDate ?></td>
+
                             <td><?= $row->description ?></td>
                             <td><?= $memberName ? ucwords($memberName) : ''; ?></td>
                             <td><?= $statusName ?></td>
+                            <td><?= $row->dueDate ?></td>
+                            <td><?= ($statusName == 'Task Completed') ? $completedOn : ''; ?></td>
+                            <td><?= $days ?></td>
                         </tr>
                         <?php
                     }
@@ -100,9 +145,9 @@ $this->registerJs("
         //labels: ['Red', 'Green', 'Yellow', 'Grey', 'Dark Grey'],
         labels:[" . $vals . "],
         datasets: [{
-          data: [$completedCount, $pendongCount],
-          backgroundColor: ['#46BFBD', '#F7464A',],
-          hoverBackgroundColor: ['#5AD3D1','#FF5A5E']
+          data: [$completedCount, $pendongCount,$overdueCount],
+          backgroundColor: ['#00C67A', '#F7464A','#D0021B'],
+          hoverBackgroundColor: ['#00C67A','#FF5A5E','#D0021B']
         }]
       },
       options: {
